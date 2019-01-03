@@ -6,6 +6,20 @@ import psycopg2
 # internal modules
 import ebase
 
+def help():
+    """Print a help message to the console output."""
+    print("""Used to specify a storage location for a device in the parts database. This should only be used
+    for parts that don't already have an assigned location. If you wish the change the location of a
+    part you should use update.py instead.\n""")
+    print("Usage: store.py [options]")
+    print("\t-h")
+    print("\t\tDisplay help.\n")
+    print("\t-s storage")
+    print("\t\tSpecifies a desired storage location. If none is specified, one will be assigned according to capacity.\n")
+    print("\t-m mfn")
+    print("""\t\tSpecify the MFN of the device to set a storage location for. There must already be
+    \t\tan entry in the parts database for this device.\n""")
+
 def select_storage(cur, mfn):
     """Use the storage location with the least number of distinct parts."""
     cur.execute("select storage from parts where mfn=%s;", (mfn,))
@@ -19,20 +33,20 @@ def select_storage(cur, mfn):
     ret = cur.fetchall()[0]
     ret = ret[0]
     return ret
-    
-def main(argv, cur):
+
+def main(argv, conn, cur):
     storage = ''
     mfn = ''
 
     try:
-        opts, args = getopt.getopt(argv, "hsm:")
+        opts, _ = getopt.getopt(argv, "hsm:")
     except getopt.GetoptError:
-        ebase.help()
+        help()
         sys.exit(2)
 
     for opt, arg in opts:
         if opt == '-h':
-            ebase.help()
+            help()
             sys.exit(0)
         elif opt == '-s':
             storage = arg
@@ -52,6 +66,6 @@ def main(argv, cur):
 if __name__ == "__main__":
     conn = ebase.db_conn()
     cur = conn.cursor()
-    main(sys.argv[1:], cur)
+    main(argv=sys.argv[1:], conn=conn, cur=cur)
     cur.close()
     conn.close()
