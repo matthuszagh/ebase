@@ -28,3 +28,8 @@ def update(conn, cur, mfn, col, val):
     else:
         print("Must answer y/n.")
         exit(1)
+
+def print_proj_table(tbl):
+    """Pretty print Postgres table."""
+    for i in tbl:
+        print("{0:<20}{1:>4}  {2}".format(i[0], i[1], i[2]))
