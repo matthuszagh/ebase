@@ -8,7 +8,7 @@ import ebase
 
 def help():
     """Print a help message to the console output."""
-    print("""Used to specify a storage location for a device in the parts database. This should only be used
+    print("""Specifies the storage location for a device in the parts database. This should only be used
     for parts that don't already have an assigned location. If you wish the change the location of a
     part you should use update.py instead.\n""")
     print("Usage: store.py [options]")

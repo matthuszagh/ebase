@@ -1,5 +1,5 @@
 # ebase
-Electronic inventory management.
+Electronic parts inventory management.
 
 #### Description
 A collection of python helper scripts for managing an electronic parts inventory with postgres.
