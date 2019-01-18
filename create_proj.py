@@ -52,9 +52,6 @@ def wr_csv_data(f, name, cur):
                                                  postgres_arr_from_str(row[3]))
                 cur.execute(insert_query)
     
-def clean_csv(src_dir):
-    subprocess.call(["rm", "{0}/tmp_.csv".format(src_dir), "{0}/tmp_.csv.tmp".format(src_dir)])
-
 def main(argv, conn, cur):
     proj_dir = ''
     name = ''
@@ -108,11 +105,11 @@ def main(argv, conn, cur):
         conn.commit()
     elif c == 'n':
         print("Nothing done.")
-        clean_csv(src_dir)
+        ebase.clean_csv(src_dir)
         exit(0)
     else:
         print("Must answer y/n.")
-        clean_csv(src_dir)
+        ebase.clean_csv(src_dir)
         exit(1)
 
 
