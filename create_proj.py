@@ -89,7 +89,11 @@ def main(argv, conn, cur):
         name = f.replace("-", "_")
         os.chdir(src_dir)
 
-    subprocess.call(["/home/matt/developer/src/third-party/KiBoM/KiBOM_CLI.py", "--cfg", "{0}/bom.ini".format(src_dir), "{0}{1}.xml".format(proj_dir, f), "{0}/tmp.csv".format(src_dir)])
+    subprocess.call([
+        "/home/matt/developer/src/third-party/KiBoM/KiBOM_CLI.py", "--cfg",
+        "{0}/bom.ini".format(src_dir), "{0}{1}.xml".format(proj_dir, f),
+        "{0}/tmp.csv".format(src_dir),
+    ])
 
     cur.execute("""drop table if exists projects.{0}""".format(name))
     cur.execute("""create table projects.{0} (mfn text not null, qty integer,
