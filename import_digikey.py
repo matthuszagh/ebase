@@ -15,6 +15,7 @@ if __name__ == '__main__':
         description="Imports parts from a Digi-Key csv file to the parts database.")
     parser.add_argument("file", help="csv file to import",
                         default="/home/matt/digikey.csv")
+    parser.parse_args()
 
     cur.execute("""create temporary table tmp (index int, qty int, pn text, mfn text, description text, ref text,
     backorder int, unit_price numeric(5,2), total_price text)""")
