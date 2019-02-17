@@ -62,23 +62,6 @@ def fix_bytes(filename, delimiter=','):
                     for line in f)
 
 
-# def update(conn, cur, mfn, col, val):
-#     cur.execute("update parts set %s=%s where mfn=%s;", (AsIs(col), val, mfn))
-#     print("Updated entry:")
-#     cur.execute("select * from parts where mfn=%s;", (mfn,))
-#     print(cur.fetchall())
-#     print("")
-#     c = input('Commit? y/n ')
-#     if c == 'y':
-#         conn.commit()
-#     elif c == 'n':
-#         print("Nothing done.")
-#         exit(0)
-#     else:
-#         print("Must answer y/n.")
-#         exit(1)
-
-
 def print_proj_table(tbl):
     """Pretty print Postgres table."""
     # TODO: use "rows, columns = subprocess.check_output(['stty', 'size']).split()"
@@ -94,36 +77,6 @@ def print_proj_table(tbl):
                 mfn=i[0], mfn_width=max_width, stock=i[1], stock_width=4, ref_designators=i[2]))
     else:
         print(tbl)
-
-
-# def clean_csv(src_dir):
-#     subprocess.call(
-#         ["rm", "-f", "{0}/tmp_.csv".format(src_dir), "{0}/tmp_.csv.tmp".format(src_dir)])
-
-
-# def csv_remove_header(f):
-#     """Remove header (first line) from file."""
-#     with open(f, 'r') as fin:
-#         data = fin.read().splitlines(True)
-#     with open(f, 'w') as fout:
-#         fout.writelines(data[1:])
-
-
-# def csv_remove_last_line(f):
-#     """Remove last line from file."""
-#     with open(f, 'r') as fin:
-#         data = fin.read().splitlines(True)
-#     with open(f, 'w') as fout:
-#         fout.writelines(data[:-1])
-
-
-# def csv_remove_quotes(f):
-#     """Remove quotes from csv file."""
-#     with open(f, 'r') as fin:
-#         data = fin.read()
-#         data = data.replace("\"", "")
-#     with open(f, 'w') as fout:
-#         fout.write(data)
 
 
 def exec_bash_cmd(cmd):
