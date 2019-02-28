@@ -20,7 +20,7 @@ import math
 
 def db_conn():
     """Connect to the electronics inventory database using the credentials in credentials.yml."""
-    f = open('ebase_config/credentials.yml', 'r')
+    f = open('/usr/local/bin/ebase_config/credentials.yml', 'r')
     data = yaml.load(f)
     dbname = data['dbname']
     user = data['user']
@@ -119,13 +119,16 @@ class Scanner():
             36: "7",
             37: "8",
             38: "9",
+            44: " ",
             45: "-",
             47: "[",
             48: "]",
-            55: "."
+            55: ".",
+            56: "/"
         }
 
         self.CODE2 = {
+            32: "#",
             39: ")",
             55: ">",
             4: "A",
@@ -306,7 +309,7 @@ class DB():
                     insert_query = """insert into projects.{0} (mfn, qty, ref_designators) 
                     values ('{1}', {2}, '{3}')""".format(name, row[1], row[2],
                                                          postgres_arr_from_str(row[3]))
-                    self.exec_query(insert_query)
+                    self.exec_query(insert_query, True)
 
     def sync_proj_entries(self, proj):
         """
@@ -325,11 +328,17 @@ class DB():
             q, mfn)
         self.exec_query(add_query, True)
 
-    def create_part(self, mfn, q):
-        """Create a part in the parts table."""
-        insert_query = """insert into parts (mfn, stock) values('{0}', {1})""".format(
-            mfn, q)
-        self.exec_query(insert_query, True)
+    def init_part(self, mfn):
+        """Add entry to parts database for an mfn."""
+        add_query = "insert into parts (mfn, stock) values ('{0}', {1})".format(
+            mfn, 0)
+        self.exec_query(add_query, True)
+
+    def create_part(self, mfn, q, storage):
+        """Create a part in the parts table. The mfn entry must already exist for this to work."""
+        update_query = "update parts set stock={0}, storage='{1}' where mfn='{2}'".format(
+            q, storage, mfn)
+        self.exec_query(update_query, True)
 
     def find_storage(self):
         """Return the least occupied storage location for a new part."""
@@ -368,10 +377,12 @@ class DB():
         ref_designators text[])""".format(name)
         self.exec_query(create_table_query, True)
         self.wr_csv_data("{}/tmp.csv".format(args.proj_dir), name)
+        if self.modified == True:
+            self.confirm_mod()
 
-        clean_proj_dir_cmd = "rm {}/tmp.csv".format(args.proj_dir)
+        clean_proj_dir_cmd = "rm -f {}/tmp.csv*".format(args.proj_dir)
         exec_bash_cmd(clean_proj_dir_cmd)
-        clean_src_dir_cmd = "rm tmp.csv"
+        clean_src_dir_cmd = "rm -f tmp.csv*"
         exec_bash_cmd(clean_src_dir_cmd)
 
     def scan(self, args):
@@ -382,8 +393,14 @@ class DB():
         scanner = Scanner()
         s = scanner.get_dm()
         mfn, q = scanner.parse_dm(s)
-        mfn_query = """select storage from parts where mfn={}""".format(mfn)
-        storage = self.exec_query(mfn_query)[0][0]
+        mfn_query = """select storage from parts where mfn='{}'""".format(mfn)
+
+        try:
+            storage = self.exec_query(mfn_query)[0][0]
+        except:
+            self.init_part(mfn)
+            storage = None
+
         if storage != None:
             print("{0} already has storage at location {1}".format(mfn, storage))
             self.update_part(mfn, q)
@@ -391,7 +408,7 @@ class DB():
             storage = self.find_storage()
             printer = Printer()
             printer.print_label(mfn, 20)
-            self.create_part(mfn, q)
+            self.create_part(mfn, q, storage)
 
         self.commit()
 
