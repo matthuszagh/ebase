@@ -261,7 +261,7 @@ class DB():
                 print("sql> ", i[0])
             elif i[1] == 'o':  # query output
                 print('')
-                print_proj_table(i[0])
+                print_proj_table(i)
                 print('')
             elif i[1] == 'm':  # misc
                 print(i[0])
@@ -290,7 +290,8 @@ class DB():
 
     def confirm_mod(self):
         """Prompt the user if the change should be committed."""
-        exec_bash_cmd("ebase_config/backup.sh")
+        # exec_bash_cmd(
+        #     "/home/matt/developer/src/personal/ebase/ebase_config/backup.sh")
         c = input("\nCommit? y/n ")
         if c == 'y':
             self.conn.commit()
@@ -320,7 +321,7 @@ class DB():
         mfn=projects.{0}.mfn)""".format(proj))
         for part in parts:
             self.exec_query(
-                """insert into parts (mfn, stock) values (%s, 0)""", (part[0],))
+                """insert into parts (mfn, stock) values ('{}', 0)""".format(part[0]), True)
 
     def update_part(self, mfn, q):
         """Add stock to an existing part in the parts table."""
